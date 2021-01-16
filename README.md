@@ -1,2 +1,2 @@
-# whatsapp_chat_exporter
+# Whatsapp Chats Exporter
 Export All your WhatsApp chats to CSV files
