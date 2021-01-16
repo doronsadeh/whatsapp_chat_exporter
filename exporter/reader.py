@@ -163,10 +163,6 @@ class Reader:
 
         return list(names)
 
-    def _parse_into_csv(self):
-        # TODO make the jumble a readable thing
-        pass
-
     def export(self, limit_pages=None):
         self._scroll_to_top(self.driver.find_element_by_id('pane-side'))
         self._scan_names(limit_pages)
