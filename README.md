@@ -6,8 +6,6 @@ Export All your WhatsApp chats to CSV files
 Install Python3, if not already installed.
 
 ### Linux
-
-
     chmod +x ./start.sh
     ./start.sh
 
@@ -18,4 +16,8 @@ Install Python3, if not already installed.
 
 ### Windows 
     start.bat
-        
+
+## Notes
+Currently we output text files (*.json) that cary the raw text of the chats.
+A parser into CSV will be implemented shortly. Note we do not extract the media,
+just texts and links.        
