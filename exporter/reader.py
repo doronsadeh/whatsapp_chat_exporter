@@ -1,8 +1,8 @@
 import copy
 import os
+import platform
 import sys
 from time import sleep
-import platform
 
 from selenium import webdriver
 
@@ -15,9 +15,7 @@ class Reader:
     MAX_WAITS = 30
 
     def __init__(self):
-        # TODO auto detect OS and load drivers accordingly
-        ostype = platform.system().lower()
-        self.driver = webdriver.Chrome(executable_path='drivers/%s/chromedriver' % ostype)
+        self.driver = webdriver.Chrome(executable_path=self._driver_path())
         self.driver.get("https://web.whatsapp.com/")
 
         # Will hold contacts: [texts and media]
@@ -36,6 +34,18 @@ class Reader:
 
             sleep(1)
 
+    def _driver_path(self):
+        _platform = platform.platform().lower()
+        _ostype = platform.system().lower()
+
+        if _ostype == 'linux' or _ostype == 'windows':
+            return 'drivers/%s/chromedriver' % _ostype
+        elif _platform.startswith('macos'):
+            return 'drivers/macos/chromedriver'
+        else:
+            print('Unsupported OS (%s/%s)' % (_platform, _ostype))
+            sys.exit(-1)
+
     def _scroll(self, selector):
         p = self.driver.find_element_by_css_selector(selector)
         self.driver.execute_script(str.format("arguments[0].scrollTop = arguments[0].scrollTop + {}", p.size['height']), p)
@@ -48,7 +58,7 @@ class Reader:
             try:
                 # Get the current text
                 p0 = self.driver.find_element_by_css_selector(selector)
-                _text = copy.copy(p0.text)
+                _text = copy.copy(p0.text[:128])
 
                 # If we are at the top of the chat, return
                 if 'messages are end-to-end encrypted. no one outside of this chat, not even whatsapp, can read or listen to them. click to learn more' in _text.lower():
@@ -62,7 +72,7 @@ class Reader:
 
                 # TODO if stuck, i.e. too many times trying here w/same text, bail
                 p1 = self.driver.find_element_by_css_selector(selector)
-                if p1.text == _text:
+                if p1.text[:128] == _text:
                     # It is the same text, sleep a little, and continue
                     sleep(5)
                     if self.MAX_WAITS is not None:
